@@ -7,6 +7,15 @@ import ROOT as rt
 from array import array
 rt.gROOT.SetBatch(rt.kTRUE)
 
+# rt.gROOT.SetWebDisplay("chrome")
+
+global_file = rt.TFile.Open("cms_style_canvases.root", "recreate")
+
+def CloseGlobalFile():
+   global_file.Close()
+   global_file.Delete()
+
+
 cms_lumi = 'Run 2, 138 fb^{-1}'
 cms_energy = '13'
 
@@ -249,7 +258,7 @@ def CMS_lumi(pad, iPosX=11, scaleLumi=None):
         lumiText += ' ('+cms_energy+' TeV)'
     if scaleLumi:
         lumiText = ScaleText(lumiText, scale = scaleLumi)
-    
+
     def drawText(text, posX, posY, font, align, size):
         latex.SetTextFont(font)
         latex.SetTextAlign(align)
@@ -323,7 +332,7 @@ def CMS_lumi(pad, iPosX=11, scaleLumi=None):
 def tdrCanvas(canvName, x_min, x_max, y_min, y_max, nameXaxis, nameYaxis, square=kSquare, iPos=11, extraSpace=0, with_z_axis=False, scaleLumi=None):
     """
     Draw a canvas with TDR style.
-    
+
     canvName: Name of the canvas.
     x_min: Minimum value of the x-axis.
     x_max: Maximum value of the x-axis.
@@ -532,5 +541,8 @@ def SaveCanvas(canv, path, close=True):
     ''' Takes care of fixing overlay and closing object '''
     fixOverlay()
     canv.SaveAs(path)
+    global_file.WriteObject(canv, canv.GetName())
+#    canv.SaveAs(path + '.root')
+#    rt.TWebCanvas.StoreCanvasJSON(canv, path + '.json')
     if close:
         canv.Close()
